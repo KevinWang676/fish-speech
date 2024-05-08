@@ -340,7 +340,7 @@ def parse_args():
     parser.add_argument(
         "--llama-checkpoint-path",
         type=Path,
-        default="checkpoints/text2semantic-sft-medium-v1-4k.pth",
+        default="checkpoints/text2semantic-sft-large-v1-4k.pth",
     )
     parser.add_argument(
         "--llama-config-name", type=str, default="dual_ar_2_codebook_medium"
