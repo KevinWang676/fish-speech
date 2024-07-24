@@ -9,6 +9,7 @@ from functools import partial
 from pathlib import Path
 
 import gradio as gr
+import librosa
 import numpy as np
 import pyrootutils
 import torch
@@ -173,25 +174,11 @@ def inference_with_auto_rerank(
     top_p,
     repetition_penalty,
     temperature,
+    use_auto_rerank,
     streaming=False,
-    use_auto_rerank=True,
 ):
-    if not use_auto_rerank:
-        return inference(
-            text,
-            enable_reference_audio,
-            reference_audio,
-            reference_text,
-            max_new_tokens,
-            chunk_length,
-            top_p,
-            repetition_penalty,
-            temperature,
-            streaming,
-        )
 
-    zh_model, en_model = load_model()
-    max_attempts = 2
+    max_attempts = 2 if use_auto_rerank else 1
     best_wer = float("inf")
     best_audio = None
     best_sample_rate = None
@@ -218,11 +205,11 @@ def inference_with_auto_rerank(
         if audio is None:
             return None, None, message
 
-        asr_result = batch_asr(
-            zh_model if is_chinese(text) else en_model, [audio], sample_rate
-        )[0]
-        wer = calculate_wer(text, asr_result["text"])
+        if not use_auto_rerank:
+            return None, (sample_rate, audio), None
 
+        asr_result = batch_asr(asr_model, [audio], sample_rate)[0]
+        wer = calculate_wer(text, asr_result["text"])
         if wer <= 0.3 and not asr_result["huge_gap"]:
             return None, (sample_rate, audio), None
 
@@ -237,7 +224,7 @@ def inference_with_auto_rerank(
     return None, (best_sample_rate, best_audio), None
 
 
-inference_stream = partial(inference_with_auto_rerank, streaming=True)
+inference_stream = partial(inference, streaming=True)
 
 n_audios = 4
 
@@ -256,6 +243,7 @@ def inference_wrapper(
     repetition_penalty,
     temperature,
     batch_infer_num,
+    if_load_asr_model,
 ):
     audios = []
     errors = []
@@ -271,6 +259,7 @@ def inference_wrapper(
             top_p,
             repetition_penalty,
             temperature,
+            if_load_asr_model,
         )
 
         _, audio_data, error_message = result
@@ -313,6 +302,45 @@ def normalize_text(user_input, use_normalization):
         return user_input
 
 
+asr_model = None
+
+
+def change_if_load_asr_model(if_load):
+    global asr_model
+
+    if if_load:
+        gr.Warning("Loading faster whisper model...")
+        if asr_model is None:
+            asr_model = load_model()
+        return gr.Checkbox(label="Unload faster whisper model", value=if_load)
+
+    if if_load is False:
+        gr.Warning("Unloading faster whisper model...")
+        del asr_model
+        asr_model = None
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            gc.collect()
+        return gr.Checkbox(label="Load faster whisper model", value=if_load)
+
+
+def change_if_auto_label(if_load, if_auto_label, enable_ref, ref_audio, ref_text):
+    if if_load and asr_model is not None:
+        if (
+            if_auto_label
+            and enable_ref
+            and ref_audio is not None
+            and ref_text.strip() == ""
+        ):
+            data, sample_rate = librosa.load(ref_audio)
+            res = batch_asr(asr_model, [data], sample_rate)[0]
+            ref_text = res["text"]
+    else:
+        gr.Warning("Whisper model not loaded!")
+
+    return gr.Textbox(value=ref_text)
+
+
 def build_app():
     with gr.Blocks(theme=gr.themes.Base()) as app:
         gr.Markdown(HEADER_MD)
@@ -321,7 +349,8 @@ def build_app():
         app.load(
             None,
             None,
-            js="() => {const params = new URLSearchParams(window.location.search);if (!params.has('__theme')) {params.set('__theme', 'light');window.location.search = params.toString();}}",
+            js="() => {const params = new URLSearchParams(window.location.search);if (!params.has('__theme')) {params.set('__theme', '%s');window.location.search = params.toString();}}"
+            % args.theme,
         )
 
         # Inference
@@ -343,8 +372,13 @@ def build_app():
                     if_refine_text = gr.Checkbox(
                         label=i18n("Text Normalization"),
                         value=True,
-                        scale=0,
-                        min_width=150,
+                        scale=1,
+                    )
+
+                    if_load_asr_model = gr.Checkbox(
+                        label=i18n("Load / Unload ASR model for auto-reranking"),
+                        value=False,
+                        scale=3,
                     )
 
                 with gr.Row():
@@ -403,12 +437,19 @@ def build_app():
                             label=i18n("Reference Audio"),
                             type="filepath",
                         )
-                        reference_text = gr.Textbox(
-                            label=i18n("Reference Text"),
-                            placeholder=i18n("Reference Text"),
-                            lines=1,
-                            value="在一无所知中，梦里的一天结束了，一个新的「轮回」便会开始。",
-                        )
+                        with gr.Row():
+                            if_auto_label = gr.Checkbox(
+                                label=i18n("Auto Labeling"),
+                                min_width=100,
+                                scale=0,
+                                value=False,
+                            )
+                            reference_text = gr.Textbox(
+                                label=i18n("Reference Text"),
+                                lines=1,
+                                placeholder="在一无所知中，梦里的一天结束了，一个新的「轮回」便会开始。",
+                                value="",
+                            )
                     with gr.Tab(label=i18n("Batch Inference")):
                         batch_infer_num = gr.Slider(
                             label="Batch infer nums",
@@ -457,6 +498,28 @@ def build_app():
             fn=normalize_text, inputs=[text, if_refine_text], outputs=[refined_text]
         )
 
+        if_load_asr_model.change(
+            fn=change_if_load_asr_model,
+            inputs=[if_load_asr_model],
+            outputs=[if_load_asr_model],
+        )
+
+        if_auto_label.change(
+            fn=lambda: gr.Textbox(value=""),
+            inputs=[],
+            outputs=[reference_text],
+        ).then(
+            fn=change_if_auto_label,
+            inputs=[
+                if_load_asr_model,
+                if_auto_label,
+                enable_reference_audio,
+                reference_audio,
+                reference_text,
+            ],
+            outputs=[reference_text],
+        )
+
         # # Submit
         generate.click(
             inference_wrapper,
@@ -471,6 +534,7 @@ def build_app():
                 repetition_penalty,
                 temperature,
                 batch_infer_num,
+                if_load_asr_model,
             ],
             [stream_audio, *global_audio_list, *global_error_list],
             concurrency_limit=1,
@@ -512,6 +576,7 @@ def parse_args():
     parser.add_argument("--half", action="store_true")
     parser.add_argument("--compile", action="store_true")
     parser.add_argument("--max-gradio-length", type=int, default=0)
+    parser.add_argument("--theme", type=str, default="light")
 
     return parser.parse_args()
 

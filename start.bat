@@ -3,7 +3,11 @@ chcp 65001
 
 set USE_MIRROR=true
 set PYTHONPATH=%~dp0
-set PYTHON_CMD=%cd%\fishenv\env\python
+set PYTHON_CMD=python
+if exist "fishenv" (
+    set PYTHON_CMD=%cd%\fishenv\env\python
+)
+
 set API_FLAG_PATH=%~dp0API_FLAGS.txt
 set KMP_DUPLICATE_LIB_OK=TRUE
 
@@ -17,6 +21,14 @@ if "%USE_MIRROR%" == "true" (
 )
 echo "HF_ENDPOINT: !HF_ENDPOINT!"
 echo "NO_PROXY: !no_proxy!"
+
+echo "%CD%"| findstr /R /C:"[!#\$%&()\*+,;<=>?@\[\]\^`{|}~\u4E00-\u9FFF ] " >nul && (
+    echo.
+    echo There are special characters in the current path, please make the path of fish-speech free of special characters before running. && (
+        goto end
+    )
+)
+
 %PYTHON_CMD% .\tools\download_models.py
 
 set "API_FLAGS="

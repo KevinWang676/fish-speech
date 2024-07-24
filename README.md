@@ -1,5 +1,11 @@
 # Fish Speech
 
+<div align="center">
+
+**English** | [中文简体](README.zh.md) | [Portuguese (Brazil)](README.pt-BR.md)
+
+</div>
+
 <div>
 <a target="_blank" href="https://discord.gg/Es5qTB9BcN">
 <img alt="Discord" src="https://img.shields.io/discord/1214047546020728892?color=%23738ADB&label=Discord&logo=discord&logoColor=white&style=flat-square"/>
@@ -11,8 +17,6 @@
 <img alt="Action" src="https://img.shields.io/github/actions/workflow/status/fishaudio/fish-speech/build-windows-package.yml?style=flat-square&label=Build%20Windows%20Package&logo=github"/>
 </a>
 </div>
-
-[Chinese README](README.zh.md)
 
 This codebase and all models are released under CC-BY-NC-SA-4.0 License. Please refer to [LICENSE](LICENSE) for more details.
 
@@ -37,6 +41,7 @@ We do not hold any responsibility for any illegal usage of the codebase. Please 
 - [English](https://speech.fish.audio/en/)
 - [中文](https://speech.fish.audio/)
 - [日本語](https://speech.fish.audio/ja/)
+- [Portuguese (Brazil)](https://speech.fish.audio/pt/)
 
 ## Credits
 

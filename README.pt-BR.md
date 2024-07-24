@@ -2,16 +2,13 @@
 
 <div align="center">
 
-[English](README.md) | **中文简体** | [Português (Brasil)](README.pt-BR.md)
+[Inglês](README.md) | [Chinês](README.zh.md) | **Português (Brasil)**
 
 </div>
 
 <div>
 <a target="_blank" href="https://discord.gg/Es5qTB9BcN">
 <img alt="Discord" src="https://img.shields.io/discord/1214047546020728892?color=%23738ADB&label=Discord&logo=discord&logoColor=white&style=flat-square"/>
-</a>
-<a target="_blank" href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=jCKlUP7QgSm9kh95UlBoYv6s1I-Apl1M&authKey=xI5ttVAp3do68IpEYEalwXSYZFdfxZSkah%2BctF5FIMyN2NqAa003vFtLqJyAVRfF&noverify=0&group_code=593946093">
-<img alt="QQ" src="https://img.shields.io/badge/QQ Group-%2312B7F5?logo=tencent-qq&logoColor=white&style=flat-square"/>
 </a>
 <a target="_blank" href="https://hub.docker.com/r/lengyue233/fish-speech">
 <img alt="Docker" src="https://img.shields.io/docker/pulls/lengyue233/fish-speech?style=flat-square&logo=docker"/>
@@ -21,41 +18,41 @@
 </a>
 </div>
 
-此代码库及模型根据 CC-BY-NC-SA-4.0 许可证发布。请参阅 [LICENSE](LICENSE) 了解更多细节.
+Este código-fonte e os modelos são publicados sob a licença CC-BY-NC-SA-4.0. Consulte [LICENSE](LICENSE) para mais detalhes.
 
-## 免责声明
- 
-我们不对代码库的任何非法使用承担任何责任. 请参阅您当地关于 DMCA (数字千年法案) 和其他相关法律法规.
+## Isenção de Responsabilidade
 
-## 在线 DEMO
+Não nos responsabilizamos por qualquer uso ilegal do código-fonte. Consulte as leis locais sobre DMCA (Digital Millennium Copyright Act) e outras leis relevantes em sua região.
+
+## Demonstração Online
 
 [Fish Audio](https://fish.audio)
 
-## 快速开始本地推理
+## Início Rápido de Inferência Local
 
 [inference.ipynb](/inference.ipynb)
 
-## 视频
+## Vídeos
 
-#### 1.2 介绍: https://www.bilibili.com/video/BV1wz421B71D
+#### 1.2 Introdução: https://www.bilibili.com/video/BV1wz421B71D
 
-#### 1.1 技术介绍: https://www.bilibili.com/video/BV1zJ4m1K7cj
+#### 1.1 Apresentação Técnica: https://www.bilibili.com/video/BV1zJ4m1K7cj
 
-## 文档
+## Documentação
 
-- [English](https://speech.fish.audio/en/)
-- [中文](https://speech.fish.audio/)
-- [日本語](https://speech.fish.audio/ja/)
-- [Portuguese (Brazil)](https://speech.fish.audio/pt/)
+- [Inglês](https://speech.fish.audio/en/)
+- [Chinês](https://speech.fish.audio/)
+- [Japonês](https://speech.fish.audio/ja/)
+- [Português (Brasil)](https://speech.fish.audio/pt/)
 
-## 例子
+## Exemplos
 
-- [English](https://speech.fish.audio/en/samples/)
-- [中文](https://speech.fish.audio/samples/)
-- [日本語](https://speech.fish.audio/ja/samples/)
-- [Portuguese (Brazil)](https://speech.fish.audio/pt/samples/)
+- [Inglês](https://speech.fish.audio/en/samples/)
+- [Chinês](https://speech.fish.audio/samples/)
+- [Japonês](https://speech.fish.audio/ja/samples/)
+- [Português (Brasil)](https://speech.fish.audio/pt/samples/)
 
-## 鸣谢
+## Agradecimentos
 
 - [VITS2 (daniilrobnikov)](https://github.com/daniilrobnikov/vits2)
 - [Bert-VITS2](https://github.com/fishaudio/Bert-VITS2)
@@ -64,19 +61,19 @@
 - [GPT Fast](https://github.com/pytorch-labs/gpt-fast)
 - [GPT-SoVITS](https://github.com/RVC-Boss/GPT-SoVITS)
 
-## 赞助
+## Patrocinadores
 
 <div>
   <a href="https://6block.com/">
     <img src="https://avatars.githubusercontent.com/u/60573493" width="100" height="100" alt="6Block Avatar"/>
   </a>
   <br>
-  <a href="https://6block.com/">数据处理服务器由 6Block 提供</a>
+  <a href="https://6block.com/">Servidores de processamento de dados fornecidos por 6Block</a>
 </div>
 <div>
   <a href="https://www.lepton.ai/">
     <img src="https://www.lepton.ai/favicons/apple-touch-icon.png" width="100" height="100" alt="Lepton Avatar"/>
   </a>
   <br>
-  <a href="https://www.lepton.ai/">Fish Audio 在线推理与 Lepton 合作</a>
+  <a href="https://www.lepton.ai/">Inferência online do Fish Audio em parceria com a Lepton</a>
 </div>
